@@ -67,7 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    private static class SignUpGrpcTask extends AsyncTask<String,String,String>{
+    private static class SignUpGrpcTask extends AsyncTask<String, String, String> {
         private ManagedChannel channel;
         private final WeakReference<Activity> activityRefrence;
         private SignupResp response;
@@ -86,26 +86,27 @@ public class SignUpActivity extends AppCompatActivity {
             String password = params[3];
             String email = params[4];
 
-           try{
-            channel = ManagedChannelBuilder.forAddress("localhost",8585).build();
-            AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
-            SignupReq request = SignupReq.newBuilder().setEmail(email).setFirstName(firstName).setLastName(lastName).setPassword(password).setUsername(username).build();
-            response = stub.signup(request);
-            return "ok";} catch (Exception e) {
+            try {
+                channel = ManagedChannelBuilder.forAddress("localhost", 8585).build();
+                AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
+                SignupReq request = SignupReq.newBuilder().setEmail(email).setFirstName(firstName).setLastName(lastName).setPassword(password).setUsername(username).build();
+                response = stub.signup(request);
+                return "ok";
+            } catch (Exception e) {
 
-               StringWriter sw = new StringWriter();
-               PrintWriter pw = new PrintWriter(sw);
-               e.printStackTrace(pw);
-               pw.flush();
-               return String.format("Failed... : %n%s", sw);
-           }
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                pw.flush();
+                return String.format("Failed... : %n%s", sw);
+            }
         }
 
         @Override
         protected void onPostExecute(String s) {
             Toast.makeText(this.activityRefrence.get().getApplicationContext(), "server token :" + response.getToken() +
                     "\n server succes : " + response.getResult().getSuccuss() +
-                            "\n server message : " + response.getResult().getMessage() +
+                    "\n server message : " + response.getResult().getMessage() +
                     "\n server fullname : " + response.getUser().getFullName() +
                     "\n server username : " + response.getUser().getUsername(), Toast.LENGTH_SHORT).show();
             try {
@@ -115,7 +116,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     }
-
 
 
 }
