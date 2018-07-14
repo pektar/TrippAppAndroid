@@ -100,7 +100,7 @@ public class SignUpActivity extends AppCompatActivity {
                 pw.flush();
                 return String.format("Failed... : %n%s", sw);
             }
-           
+
         }
 
         @Override
