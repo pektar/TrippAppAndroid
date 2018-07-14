@@ -1,7 +1,6 @@
 package com.trippapp.android.trippappandroid;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -26,13 +25,13 @@ import io.grpc.trippapp.Account.LoginResp;
 public class LoginActivity extends AppCompatActivity {
 
     EditText username_email, password;
-    Button login;
+    Button loginBtn;
     TextView signUpText;
 
     private void initViews() {
         username_email = findViewById(R.id.et_username_email_login);
         password = findViewById(R.id.et_password_login);
-        login = findViewById(R.id.bt_login_login);
+        loginBtn = findViewById(R.id.bt_login_login);
         signUpText = findViewById(R.id.tv_signup_login);
     }
 
@@ -41,14 +40,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new LoginGrpcTask(LoginActivity.this).execute(
+                        username_email.getText().toString(),
+                        password.getText().toString());
+            }
+        });
+
+        signUpText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+            }
+        });
     }
 
-    public void GotoSingUp(View view) {
-        startActivity(new Intent(this, SignUpActivity.class));
-        new LoginGrpcTask(this).execute(
-                username_email.getText().toString(),
-                password.getText().toString());
-    }
+
 
     private static class LoginGrpcTask extends AsyncTask<String, String, String> {
         private ManagedChannel channel;
