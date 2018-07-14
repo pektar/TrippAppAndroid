@@ -86,23 +86,8 @@ public class SignUpActivity extends AppCompatActivity {
             String password = params[3];
             String email = params[4];
 
-<<<<<<< HEAD
-           try{
-            channel = ManagedChannelBuilder.forAddress("localhost",8585).usePlaintext().build();
-            AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
-            SignupReq request = SignupReq.newBuilder().setEmail(email).setFirstName(firstName).setLastName(lastName).setPassword(password).setUsername(username).build();
-            response = stub.signup(request);
-            return "ok";} catch (Exception e) {
-
-               StringWriter sw = new StringWriter();
-               PrintWriter pw = new PrintWriter(sw);
-               e.printStackTrace(pw);
-               pw.flush();
-               return String.format("Failed... : %n%s", sw);
-           }
-=======
             try {
-                channel = ManagedChannelBuilder.forAddress("localhost", 8585).build();
+                channel = ManagedChannelBuilder.forAddress("localhost", 8585).usePlaintext().build();
                 AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
                 SignupReq request = SignupReq.newBuilder().setEmail(email).setFirstName(firstName).setLastName(lastName).setPassword(password).setUsername(username).build();
                 response = stub.signup(request);
@@ -115,7 +100,7 @@ public class SignUpActivity extends AppCompatActivity {
                 pw.flush();
                 return String.format("Failed... : %n%s", sw);
             }
->>>>>>> signup_grpc
+           
         }
 
         @Override
