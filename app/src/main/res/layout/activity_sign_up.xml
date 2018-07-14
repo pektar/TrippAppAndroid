@@ -75,7 +75,6 @@
         android:layout_marginStart="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="GotoLogin"
         android:text="Login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
