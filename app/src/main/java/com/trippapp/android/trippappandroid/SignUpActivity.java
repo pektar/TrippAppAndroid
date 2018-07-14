@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         email = findViewById(R.id.et_email_signup);
         password = findViewById(R.id.et_password_signup);
         signUp = findViewById(R.id.bt_signup_signup);
-        loginText = findViewById(R.id.tv_signup_login);
+        loginText = findViewById(R.id.tv_login_signup);
     }
 
     @Override
