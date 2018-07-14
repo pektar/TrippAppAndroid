@@ -1,5 +1,7 @@
 package com.trippapp.android.trippappandroid;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -38,31 +45,55 @@ public class LoginActivity extends AppCompatActivity {
 
     public void GotoSingUp(View view) {
         startActivity(new Intent(this, SignUpActivity.class));
+        new LoginGrpcTask(this).execute(
+                username_email.getText().toString(),
+                password.getText().toString());
     }
 
-    private class LoginGrpc extends AsyncTask<String, String, LoginResp> {
+    private static class LoginGrpcTask extends AsyncTask<String, String, String> {
         private ManagedChannel channel;
+        private final WeakReference<Activity> activityReference;
+        private LoginResp response;
+
+
+        private LoginGrpcTask(Activity activity) {
+            activityReference = new WeakReference<>(activity);
+        }
 
         @Override
-        protected LoginResp doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             String username_email = params[0];
             String password = params[1];
-            channel = ManagedChannelBuilder.forAddress("localhost",8585).usePlaintext().build();
-            AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
-            LoginReq request = LoginReq.newBuilder().setUsernameEmail(username_email).setPassword(password).build();
-            LoginResp response = stub.login(request);
-            return response;
+            try {
+                channel = ManagedChannelBuilder.forAddress("localhost", 8585).usePlaintext().build();
+                AccountServiceGrpc.AccountServiceBlockingStub stub = AccountServiceGrpc.newBlockingStub(channel);
+                LoginReq request = LoginReq.newBuilder().setUsernameEmail(username_email).setPassword(password).build();
+                response = stub.login(request);
+                return "ok";
+            } catch (Exception e) {
+
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                pw.flush();
+                return String.format("Failed... : %n%s", sw);
+            }
         }
 
         @Override
-        protected void onPostExecute(LoginResp response) {
-            Toast.makeText(LoginActivity.this, "server token : " + response.getToken() + "\n server user "
-                    + response.getUser() + "server message : " +response.getResult().getMessage() +
-                    "\n server succes: " + response.getResult().getSuccuss() , Toast.LENGTH_LONG).show();
+        protected void onPostExecute(String response) {
+            Toast.makeText(activityReference.get().getApplicationContext(), "server token : " + this.response.getToken() + "\n server user "
+                    + this.response.getUser() + "server message : " + this.response.getResult().getMessage() +
+                    "\n server succes: " + this.response.getResult().getSuccuss(), Toast.LENGTH_LONG).show();
+            try {
+                channel.shutdown().awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+
         }
     }
-
-
 
 
 }
